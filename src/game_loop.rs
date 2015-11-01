@@ -2,6 +2,7 @@ use piston_window::*;
 use sprite::*;
 
 use game::Game;
+use game;
 
 pub struct GameLoop {
     width: u32,
@@ -12,7 +13,7 @@ pub struct GameLoop {
 impl GameLoop {
     pub fn new(width: u32, height: u32, window_width: u32, window_height: u32, title: &'static str) -> GameLoop {
         let opengl = OpenGL::V3_2;
-        let window: PistonWindow =
+        let mut window: PistonWindow =
             WindowSettings::new(title, (window_width, window_height))
             .exit_on_esc(false)
             .opengl(opengl)
@@ -26,7 +27,7 @@ impl GameLoop {
     }
 
     pub fn run(&mut self) {
-        let mut game = Game::new();
+        let mut game = Game::new(&mut *self.window.factory.borrow_mut(), self.width, self.height);
         for e in self.window.clone() {
             e.draw_2d(|c, g| {
                 clear([1.0, 1.0, 1.0, 1.0], g);
@@ -47,8 +48,6 @@ impl GameLoop {
             e.press(|button| {
             });
             e.release(|button| {
-            });
-            e.press(|button| {
             });
         }
     }
