@@ -1,6 +1,5 @@
 use std::collections::{ HashMap };
 use std::rc::Rc;
-use graphics::{ ImageSize };
 use gfx_texture::{ Texture, TextureSettings, Flip };
 use gfx;
 use std::fs;

@@ -1,23 +1,47 @@
 use graphics::math::{ Scalar, Vec2d, Matrix2d, identity };
 use graphics::Transformed;
+use std::f64::consts::PI;
 
+use game::player;
+use game::Context;
+
+const CAMERA_BASE: f64 = 0.8;
+
+#[allow(dead_code)]
 pub struct Camera {
     pub position: Vec2d,
     pub rotation: Scalar,
     pub scale: Scalar,
+    trans_base: Matrix2d, // const
+    bottom_corner_rad: f64, // const
 }
 
 impl Camera {
-    pub fn new() -> Camera {
+    pub fn new(con: &Context) -> Camera {
         Camera {
             position: [0.0, 0.0],
             rotation: 0.0,
-            scale: 10.0
+            scale: 100.0,
+            trans_base: identity().trans(con.width as f64 / 2.0, con.height as f64 * CAMERA_BASE),
+            bottom_corner_rad: ((con.height as f64 * (1.0 - CAMERA_BASE)) / (con.width as f64 / 2.0)).atan(),
+        }
+    }
+
+    pub fn update(&mut self, fix_camera: bool, player_rotation: Scalar) {
+        let limit_rad = PI / 2.0 + self.bottom_corner_rad - player::VIEW_RANGE / 2.0;
+        if ! fix_camera {
+            self.rotation = player_rotation;
+        } else if (self.rotation - player_rotation).abs() > limit_rad {
+            if self.rotation - player_rotation < 0.0 {
+                self.rotation = player_rotation - limit_rad;
+            } else {
+                self.rotation = player_rotation + limit_rad;
+            }
         }
     }
 
     pub fn get_transform(&self) -> Matrix2d {
-        identity().rot_rad(self.rotation).scale(self.scale, self.scale).trans(- self.position[0], - self.position[1])
+        identity().append_transform(self.trans_base).rot_rad(- self.rotation).scale(self.scale, self.scale).trans(- self.position[0], - self.position[1])
     }
 
     pub fn move_by(&mut self, m: Vec2d) -> &mut Self {
@@ -45,7 +69,7 @@ impl Camera {
     }
 
     pub fn scale(&mut self, s: Scalar) -> &mut Self {
-        self.scale = self.scale + s;
+        self.scale = self.scale * s;
         self
     }
 
