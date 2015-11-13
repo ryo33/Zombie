@@ -62,10 +62,6 @@ impl InputState {
 
     pub fn vec(&mut self) -> Vec<Operation> {
         let mut states = Vec::new();
-        if self.left { states.push(Operation::Move(Direction::Left)); }
-        if self.right { states.push(Operation::Move(Direction::Right)); }
-        if self.up { states.push(Operation::Move(Direction::Up)); }
-        if self.down { states.push(Operation::Move(Direction::Down)); }
         states.push(Operation::Cursor(self.cursor_diff[0] * self.cursor_sensitivity, self.cursor_diff[1] * self.cursor_sensitivity));
         self.cursor_diff = [0.0, 0.0];
         states

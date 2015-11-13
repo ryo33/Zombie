@@ -1,9 +1,9 @@
 pub use self::game::Game;
-pub use self::game::Context;
-pub use self::operation::InputManager;
+pub use self::context::{ UpdateContext as UContext, DrawingContext as DContext };
 
 pub mod game;
-mod operation;
+pub mod operation;
+mod context;
 mod object;
 mod player;
 mod camera;

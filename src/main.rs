@@ -8,7 +8,7 @@ extern crate gfx;
 extern crate gfx_device_gl;
 
 use game_loop::GameLoopSettings;
-use game::InputManager;
+use game::operation::InputManager;
 
 mod game_loop;
 mod game;

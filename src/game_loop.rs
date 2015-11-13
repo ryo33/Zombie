@@ -1,6 +1,6 @@
 use piston_window::*;
 
-use game::InputManager;
+use game::operation::InputManager;
 use game::Game;
 
 pub struct GameLoop {

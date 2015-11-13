@@ -6,9 +6,9 @@ use std::f64::consts::PI;
 
 use super::chunk::Chunk;
 use util::graphics::Image;
-use game::Context;
 use game::camera::Camera;
 use game::player::{ self, Player };
+use game::*;
 use game::operation::*;
 
 pub const TILE_SIZE: f64 = 1.0;
@@ -22,52 +22,40 @@ pub struct World {
 }
 
 impl World {
-    pub fn new(con: &Context) -> World {
+    pub fn new(width: Scalar, height: Scalar) -> World {
         let mut chunks = HashMap::new();
         chunks.insert((0, 0), Chunk::new());
         World {
             player: Player::new(),
             chunks: chunks,
-            camera: Camera::new(con),
+            camera: Camera::new(width, height),
         }
     }
 
-    pub fn draw(&self, con: &Context, t: Matrix2d, b: &mut G2d) {
-        // camera
-        let t = t.append_transform(self.camera.get_transform());
+    pub fn draw(&self, con: &mut DContext, g: &mut G2d) {
+        con.transform = con.transform.append_transform(self.camera.get_transform());
         let chunk = self.chunks.get(&(0, 0)).expect("Could not load chunk");
         for (x, y, _tile) in chunk.iter() {
-            Image::new(con.get_tile("green"), TILE_RECT).draw(b, t.trans(x as Scalar * TILE_SIZE, y as Scalar * TILE_SIZE));
+            Image::new(con.tile_textures.get("green"), TILE_RECT).draw(g, con.transform.trans(x as Scalar * TILE_SIZE, y as Scalar * TILE_SIZE));
         }
-        self.player.draw(con, t, b);
+        self.player.draw(con, g);
     }
 
-    pub fn update(&mut self, con: &Context, dt: f64) {
-        self.camera.update(con.input_state.fix_camera, self.player.rotation);
+    pub fn update(&mut self, con: &mut UContext) {
+        self.operation(con);
+        self.camera.update(con, self.player.rotation);
+        self.player.update(con, &mut self.camera);
     }
 
-    pub fn operation(&mut self, op: &Operation, dt: f64) {
-        let mut vec = [0.0, 0.0];
-        match op {
-            &Operation::Move(Direction::Left) => {
-                vec = [- dt, 0.0];
-            },
-            &Operation::Move(Direction::Right) => {
-                vec = [dt, 0.0];
-            },
-            &Operation::Move(Direction::Up) => {
-                vec = [0.0, - dt];
-            },
-            &Operation::Move(Direction::Down) => {
-                vec = [0.0, dt];
-            },
-            &Operation::Cursor(x, _y) => {
-                let rad = x * ROTATE_RATIO * dt;
-                self.player.rotate(rad);
+    fn operation(&mut self, con: &mut UContext) {
+        for op in con.input_state.vec().iter() {
+            match op {
+                &Operation::Cursor(x, _y) => {
+                    let rad = x * ROTATE_RATIO * con.dt;
+                    self.player.rotate(rad);
+                }
+                _ => {},
             }
-            _ => {},
         }
-        let vec = self.player.move_dir(vec, &self.camera);
-        self.camera.move_by(vec);
     }
 }
