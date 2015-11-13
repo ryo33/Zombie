@@ -1,3 +1,4 @@
+use piston_window::G2d;
 use std::collections::HashMap;
 use graphics::Transformed;
 use graphics::math::{ Scalar, Vec2d, Matrix2d };
@@ -9,7 +10,6 @@ use game::Context;
 use game::camera::Camera;
 use game::player::{ self, Player };
 use game::operation::*;
-use types::Graphics;
 
 pub const TILE_SIZE: f64 = 1.0;
 pub const TILE_RECT: [f64; 4] = [0.0, 0.0, 1.0, 1.0];
@@ -32,7 +32,7 @@ impl World {
         }
     }
 
-    pub fn draw(&self, con: &Context, t: Matrix2d, b: &mut Graphics) {
+    pub fn draw(&self, con: &Context, t: Matrix2d, b: &mut G2d) {
         // camera
         let t = t.append_transform(self.camera.get_transform());
         let chunk = self.chunks.get(&(0, 0)).expect("Could not load chunk");

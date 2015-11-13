@@ -1,10 +1,10 @@
+use piston_window::G2d;
 use gfx_texture::{ Texture };
 use std::rc::Rc;
 use graphics;
 use graphics::draw_state;
 use graphics::math::{ Matrix2d };
-use gfx_graphics::{ GfxGraphics };
-use gfx_device_gl::{ Resources, CommandBuffer, Output };
+use gfx_device_gl::{ Resources };
 
 pub struct Image {
     texture: Rc<Texture<Resources>>,
@@ -25,7 +25,7 @@ impl Image {
         }
     }
 
-    pub fn draw(&self, b: &mut GfxGraphics<Resources, CommandBuffer<Resources>, Output>, model: Matrix2d) -> &Image {
+    pub fn draw(&self, b: &mut G2d, model: Matrix2d) -> &Image {
         graphics::Image::new()
             .color([self.color[0], self.color[1], self.color[2], self.opacity]).rect(self.rect)
             .draw(&*self.texture, self.draw_state, model, b);

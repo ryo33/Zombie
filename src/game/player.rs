@@ -1,3 +1,4 @@
+use piston_window::G2d;
 use graphics::math::{ Scalar, Vec2d, Matrix2d, identity };
 use graphics::Transformed;
 use std::f64::consts::PI;
@@ -32,7 +33,7 @@ impl Player {
         identity().rot_rad(self.rotation)
     }
 
-    pub fn draw(&self, con: &Context, t: Matrix2d, b: &mut Graphics) {
+    pub fn draw(&self, con: &Context, t: Matrix2d, b: &mut G2d) {
         Image::new(con.get_tile("man"), TILE_RECT)
             .draw(b, t
                   .trans(self.pos[0], self.pos[1])

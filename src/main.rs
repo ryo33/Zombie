@@ -14,7 +14,6 @@ mod game_loop;
 mod game;
 mod util;
 mod math;
-mod types;
 
 fn main() {
     let mut game_loop = GameLoopSettings::new().title("zombie").get_game();

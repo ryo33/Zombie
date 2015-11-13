@@ -1,3 +1,4 @@
+use piston_window::G2d;
 use graphics::Transformed;
 use graphics::math::{ Scalar, Matrix2d };
 use gfx_device_gl::{ Resources };
@@ -9,7 +10,6 @@ use util::texture_register::TextureRegister;
 use game::operation::*;
 use game::world::World;
 use game::input_state::InputState;
-use types::Graphics;
 
 pub struct Game {
     world: World,
@@ -25,7 +25,7 @@ impl Game {
         }
     }
 
-    pub fn draw(&self, t: Matrix2d, b: &mut Graphics) {
+    pub fn draw(&self, t: Matrix2d, b: &mut G2d) {
         self.world.draw(&self.context, t, b);
     }
 
