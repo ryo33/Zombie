@@ -9,9 +9,12 @@ use game::world::TILE_SIZE;
 use util::graphics::Image;
 use game::*;
 
-const CAMERA_BASE: f64 = 0.8;
-const MOVE: f64 = 5.0;
-pub const VIEW_RANGE: f64 = PI * 2f64 / 3f64; // 120 deg
+const CAMERA_BASE: Scalar = 0.8;
+const MOVE: Scalar = 5.0;
+pub const VIEW_RANGE: Scalar = PI * 2f64 / 3f64; // 120 deg
+
+const NORMAL_SPEED: Scalar = 1.0;
+const BACK_SPEED: Scalar = 0.6;
 
 #[allow(dead_code)]
 pub struct Player {
@@ -33,18 +36,20 @@ impl Player {
 
     pub fn update(&mut self, con: &UContext, camera: &mut Camera) {
         let (mut x, mut y) = (0 as Scalar, 0 as Scalar);
+        let mut speed = NORMAL_SPEED;
         if con.input_state.left { x -= 1.0; }
         if con.input_state.right { x += 1.0; }
         if con.input_state.up { y -= 1.0; }
-        if con.input_state.down { y += 1.0; }
+        if con.input_state.down { y += 1.0; speed = BACK_SPEED; }
         if x != 0.0 || y != 0.0 {
             let l = (x * x + y * y).sqrt();
-            let vec = self.move_dir([x / l * con.dt, y / l * con.dt]);
+            let vec = self.move_dir([x / l * speed * con.dt, y / l * speed * con.dt]);
             camera.move_by(vec);
         }
     }
 
     pub fn draw(&self, con: &mut DContext, g: &mut G2d) {
+        // TODO 肩から下は動いている方向に傾ける
         Image::new(con.tile_textures.get("man"), TILE_RECT)
             .draw(g, con.transform
                   .trans(self.pos[0], self.pos[1])
